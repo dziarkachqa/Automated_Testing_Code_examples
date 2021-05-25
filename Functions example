@@ -1,0 +1,505 @@
+'NOTE : Function example Using Descriptive Programing:
+Function mainAeonNavDataValues (AeonDataValue,AeonDVProperty,NumberOfOpenActions,ClassType,descValueOne,descValueTwo,descValueThree,AeonDPGeneric01,AeonDPGeneric02,AeonDPGeneric03)		
+mainAeonNavDataValueType = datatable.GetCurrentRow
+	Select Case mainAeonNavDataValueType
+		Case 1 'WebEdit
+				Set objDesc = Description.Create
+				objDesc("micclass").Value = classType
+				objDesc(AeonDPGeneric01).Value = descValueOne
+				objDesc(AeonDPGeneric02).RegularExpression = True
+				objDesc(AeonDPGeneric02).Value = ".*" + descValueTwo +".*"
+				
+				'Put All Values based on description above into an Array using ChildObjects Method
+				Set Child = Browser("AAMS").Page("AAMS").ChildObjects(objDesc)
+				print Child.count
+				'SET A WEB EDIT FIELD
+				If Child.count > 1 Then
+					print "There are more than one objects identified, check NumberOfOpenActions to make sure you are populating the correct field"
+					'Set the Value of a Web Edit Field
+					For iCount = NumberOfOpenActions to NumberOfOpenActions
+						Child(iCount).Set descValueThree
+					Next
+				ElseIf Child.count > 0  Then 'Exactly one Field found. 
+					For iCount = NumberOfOpenActions to NumberOfOpenActions
+						Child(iCount).Set descValueThree
+					Next				
+				End If
+				Set objDesc = Nothing
+				Set Child = Nothing
+				Set iCount = Nothing				
+
+		Case 2 'WebList
+				Set objDesc = Description.Create
+				objDesc("micclass").Value = classType
+				objDesc(AeonDPGeneric01).Value = descValueOne
+				objDesc(AeonDPGeneric02).RegularExpression = True
+				objDesc(AeonDPGeneric02).Value = ".*" + descValueTwo +".*"
+				
+				'Put All Values based on description above into an Array using ChildObjects Method
+				Set Child = Browser("AAMS").Page("AAMS").ChildObjects(objDesc)
+				print Child.count
+				'SET A WEB EDIT FIELD
+				If Child.count > 1 Then
+					print "There are more than one objects identified, check NumberOfOpenActions to make sure you are populating the correct field"
+					'Select the Value of a WebList/Dropdown Object
+					For iCount = NumberOfOpenActions to NumberOfOpenActions
+						Child(iCount).Select descValueThree
+					Next
+				ElseIf Child.count > 0  Then 'Exactly one Field found. 
+					'Select the Value of a WebList/Dropdown Object
+					For iCount = NumberOfOpenActions to NumberOfOpenActions
+						Child(iCount).Select descValueThree
+					Next						
+				End If
+				Set objDesc = Nothing
+				Set Child = Nothing
+				Set iCount = Nothing
+				
+        .....................
+        
+        
+	End Select
+Set AeonDataValue = Nothing
+Set AeonDVProperty = Nothing
+Set NumberOfOpenActions = Nothing
+Set ClassType = Nothing
+Set descValueOne = Nothing
+Set descValueTwo = Nothing
+Set descValueThree = Nothing
+Set AeonDPGeneric01 = Nothing
+Set AeonDPGeneric02 = Nothing
+Set AeonDPGeneric03	= Nothing
+
+End Function
+
+
+
+'NOTE: Function example Using Repositories: 
+Function mainCreateAction (ActionType, PlanType, FundType, ActivityAddressCode, AgencyTypeCode, OrderNumber)
+mainCreateActionType = datatable.GetCurrentRow
+	Select Case mainCreateActionType
+'Case 1 Planning Actions
+'Case 2 Funding Actions
+'Case 3 Solicitation Actions
+'Case 4 Award Actions
+'Case 5 Order Actions
+'Case 6 Offer Actions
+		
+		Case 1 'Planning Actions
+			'From Main DT Window, Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("DTRightFrame").WebElement("CreateAction").Click
+			wait(3)
+			
+			'Select a Radio Button For the Type of Action to Create.
+			datatable.SetCurrentRow(ActionType)			
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebRadioGroup("ACQ-PLAN Radio Button").Select DataTable("ActionType", dtGlobalSheet)
+			wait(1)
+			
+			'Click the Generate Button to generate a unique ID or PIID. NOTE Some Actions don't require this
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Generate").Click
+			wait(3)
+			
+			'Select PLANs PLAN TYPE
+			If Browser("AAMS").Page("AAMS").Frame("Frame_2").WebList("Plan Type").Exist Then 
+				datatable.SetCurrentRow(PlanType)
+				Browser("AAMS").Page("AAMS").Frame("Frame_2").WebList("Plan Type").Select DataTable("PlanType", dtGlobalSheet)
+				wait(3)
+			End If
+			
+			'Click OK
+			Browser("AAMS").Page("AAMS").Frame("Frame_2").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Milestones Plus Button
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebElement("MilestonePlan").Click
+			wait(3)
+			
+			'Click Ok at the bottom of the Select Public Plan Window
+			Browser("AAMS").Page("AAMS").Frame("Frame_3").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Create Action").Click
+			wait(5)
+			
+			'Click Take Me There
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Take Me There").Click
+			wait(1)
+
+		Case 2 'Funding Actions
+			'From Main DT Window, Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("DTRightFrame").WebElement("CreateAction").Click
+			wait(3)
+			
+			'Select a Radio Button For the Type of Action to Create. 
+			datatable.SetCurrentRow(ActionType)
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebRadioGroup("Funding Request").Select DataTable("ActionType", dtGlobalSheet)
+			wait(1)
+			
+			'Click the Generate Button to generate a unique ID or PIID. NOTE Some Actions don't require this
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Generate").Click
+			wait(3)
+			
+			'For Purchase Requests FUND TYPE CODE
+			If Browser("AAMS").Page("AAMS").Frame("Frame_5").WebList("Fund Type Code").Exist Then 
+				datatable.SetCurrentRow(FundType)
+				Browser("AAMS").Page("AAMS").Frame("Frame_5").WebList("Fund Type Code").Select DataTable("FundType", dtGlobalSheet)
+				wait(4)
+			End If
+			
+			'Click OK
+			Browser("AAMS").Page("AAMS").Frame("Frame_2").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Milestones Plus Button
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebElement("MilestonePlan").Click
+			wait(3)
+			
+			'Click Ok at the bottom of the Select Public Plan Window
+			Browser("AAMS").Page("AAMS").Frame("Frame_3").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Create Action").Click
+			wait(5)
+			
+			'Click Take Me There
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Take Me There").Click
+			wait(3)
+			
+
+		Case 3 'Solicitation Actions
+			'From Main DT Window, Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("DTRightFrame").WebElement("CreateAction").Click
+			wait(3)
+			
+			'Select a Radio Button For the Type of Action to Create. 
+			datatable.SetCurrentRow(ActionType) 
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebRadioGroup("Solicitation Radio Button").Select DataTable("ActionType", dtGlobalSheet)
+			wait(1)
+			
+			'Click the Generate Button to generate a unique ID or PIID. NOTE Some Actions don't require this
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Generate").Click
+			wait(3)
+
+			'For SOLS, AWARDS, ORDERS
+			'Activity Address Code -- NOTE If AAC exists, then ATC also exists.  
+			'Potential area to change for different KBS. 
+			'Reset the Datatable Index back to 1.  NOTE - you can create multiple scenarios 
+			If Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Activity Address Code").Exist Then 
+				datatable.SetCurrentRow(ActivityAddressCode)
+				Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Activity Address Code").Select DataTable("ActivityAddressCode", dtGlobalSheet)
+				wait(4)
+				'Agency Type Code
+				datatable.SetCurrentRow(AgencyTypeCode)
+				Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Agency Type Code").Select DataTable("AgencyTypeCode", dtGlobalSheet)
+				wait (4)
+			End If
+
+			'Click OK
+			Browser("AAMS").Page("AAMS").Frame("Frame_2").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Milestones Plus Button
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebElement("MilestonePlan").Click
+			wait(3)
+			
+			'Click Ok at the bottom of the Select Public Plan Window
+			Browser("AAMS").Page("AAMS").Frame("Frame_3").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Create Action").Click
+			wait(5)
+			
+			'Click Take Me There
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Take Me There").Click
+			wait(1)
+		
+		Case 4 'Award Actions
+			'From Main DT Window, Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("DTRightFrame").WebElement("CreateAction").Click
+			wait(3)
+			
+			'Select a Radio Button For the Type of Action to Create. 
+			datatable.SetCurrentRow(ActionType)
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebRadioGroup("Award Radio Button").Select DataTable("ActionType", dtGlobalSheet)
+			wait(1)
+			
+			'Click the Generate Button to generate a unique ID or PIID. NOTE Some Actions don't require this
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Generate").Click
+			wait(3)
+			
+			'For SOLS, AWARDS, ORDERS
+			'Activity Address Code -- NOTE If AAC exists, then ATC also exists.  
+			'Potential area to change for different KBS.  
+			If Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Activity Address Code").Exist Then 
+				datatable.SetCurrentRow(ActivityAddressCode)
+				Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Activity Address Code").Select DataTable("ActivityAddressCode", dtGlobalSheet)
+				wait(4)
+				'Agency Type Code
+				datatable.SetCurrentRow(AgencyTypeCode)
+				Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Agency Type Code").Select DataTable("AgencyTypeCode", dtGlobalSheet)
+				wait (4)
+			End If
+		
+			'Click OK
+			Browser("AAMS").Page("AAMS").Frame("Frame_2").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Milestones Plus Button
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebElement("MilestonePlan").Click
+			wait(3)
+			
+			'Click Ok at the bottom of the Select Public Plan Window
+			Browser("AAMS").Page("AAMS").Frame("Frame_3").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Create Action").Click
+			wait(5)
+			
+			'Click Take Me There
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Take Me There").Click
+			wait(1)
+		
+		Case 5 'Order Actions
+			'From Main DT Window, Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("DTRightFrame").WebElement("CreateAction").Click
+			wait(3)
+			
+			'Select a Radio Button For the Type of Action to Create. 
+			datatable.SetCurrentRow(ActionType)
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebRadioGroup("Delivery Task Order Radio Button").Select DataTable("ActionType", dtGlobalSheet)
+			wait(1)
+
+			'Click the Generate Button to generate a unique ID or PIID. NOTE Some Actions don't require this
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Generate").Click
+			wait(3)
+		
+			'For SOLS, AWARDS, ORDERS
+			'Activity Address Code -- NOTE If AAC exists, then ATC also exists.  
+			'Potential area to change for different KBS.  
+			If Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Activity Address Code").Exist Then 
+				datatable.SetCurrentRow(ActivityAddressCode)
+				Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Activity Address Code").Select DataTable("ActivityAddressCode", dtGlobalSheet)
+				wait(4)
+				'Agency Type Code
+				datatable.SetCurrentRow(AgencyTypeCode)
+				Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Agency Type Code").Select DataTable("AgencyTypeCode", dtGlobalSheet)
+				wait (4)
+			End If
+
+			'Click OK
+			Browser("AAMS").Page("AAMS").Frame("Frame_2").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Milestones Plus Button
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebElement("MilestonePlan").Click
+			wait(3)
+			
+			'Click Ok at the bottom of the Select Public Plan Window
+			Browser("AAMS").Page("AAMS").Frame("Frame_3").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Create Action").Click
+			wait(5)
+			
+			'Click Take Me There
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Take Me There").Click
+			wait(1)
+		
+		Case 6 'Offer Actions 'From an Open Solicitation
+			
+			'Click the New Offer Button
+			Browser("AAMS").Page("AAMS").Frame("Frame_6").WebButton("New Offer Button").Click
+			wait(2)
+			
+			'Choose the Offer Radio Button (56 = Stapes, 57 = TK Consulting, 58 = Office Supply co 59 = DSI 60 = Nextel
+			datatable.SetCurrentRow(ActionType)
+			Browser("AAMS").Page("AAMS").Frame("Frame_7").WebRadioGroup("Offer/Quote Radio Button").Select Datatable ("ActionType", dtGlobalSheet)
+			wait(1)
+			
+			'Click the Next Button -NOTE currently not needed if you click the radio button in previous step, it triggers the Next automatically
+			'Browser("AAMS").Page("AAMS").Frame("Frame_7").WebButton("Next").Click
+			'wait(1)
+			
+			'Click the Generate Button
+			Browser("AAMS").Page("AAMS").Frame("Frame_7").WebButton("Generate").Click
+			
+			'Click Milestones Plus Button
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebElement("MilestonePlan").Click
+			wait(3)
+			
+			'Click Ok at the bottom of the Select Public Plan Window
+			Browser("AAMS").Page("AAMS").Frame("Frame_3").WebButton("Ok").Click
+			wait(1)
+			
+			'Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Create Action").Click
+			wait(5)
+			
+			'Click Take Me There
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Take Me There").Click
+			wait(1)
+		
+		Case 7 'Create Planning Amendment Actions - NOTE THIS CASE CREATES ACTION FROM ACTION 
+			'From a Selected Action
+			'Click BIG Process Coach
+			Browser("AAMS").Page("AAMS").Frame("Frame_8").Image("What do I do next? Click").Click
+			wait(1)
+			
+			'Click Create a planning action Amendment
+			Browser("AAMS").Page("AAMS").Frame("Frame_8").Link("Create an amendment action").Click
+			wait(1)
+						
+			'Select a Radio Button For the Type of Action to Create.
+			datatable.SetCurrentRow(ActionType)			
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebRadioGroup("Planning Amendment").Select datatable ("ActionType", dtGlobalSheet)
+			wait(1)
+			
+			'Click the Generate Button to generate a unique ID or PIID. NOTE Some Actions don't require this
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Generate").Click
+			wait(3)
+			
+			'Select PLANs PLAN TYPE
+			If Browser("AAMS").Page("AAMS").Frame("Frame_2").WebList("Plan Type").Exist Then 
+				datatable.SetCurrentRow(PlanType)
+				Browser("AAMS").Page("AAMS").Frame("Frame_2").WebList("Plan Type").Select DataTable("PlanType", dtGlobalSheet)
+				wait(3)
+			End If
+			
+			'Click OK
+			'Browser("AAMS").Page("AAMS").Frame("Frame_2").WebButton("Ok").Click
+			'wait(3)
+			
+			'Click Milestones Plus Button
+			'Browser("AAMS").Page("AAMS").Frame("Frame").WebElement("MilestonePlan").Click
+			'wait(3)
+			
+			'Click Ok at the bottom of the Select Public Plan Window
+			'Browser("AAMS").Page("AAMS").Frame("Frame_3").WebButton("Ok").Click
+			'wait(1)
+			
+			'Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Create Action").Click
+			wait(5)
+			
+			'Click Take Me There
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Take Me There").Click
+			wait(1)
+		
+		Case 8 'Create an Award Modification - NOTE THIS ACTION CREATES ACTION FROM ACTION using BIG PROCESS COACH
+			'From a Selected Action Create a create an Award Action
+			'Click BIG Process Coach
+			Browser("AAMS").Page("AAMS").Frame("Frame_8").Image("What do I do next? Click").Click
+			wait(1)
+			
+			'Click Create a Modification
+			Browser("AAMS").Page("AAMS").Frame("Frame_8").Link("Create a modification").Click
+			wait(2)
+			
+			'Select a Radio Button For the Type of Action to Create. 
+			datatable.SetCurrentRow(ActionType)
+			 Browser("AAMS").Page("AAMS").Frame("Frame").WebRadioGroup("Award Modification Radio Button").Select DataTable("ActionType", dtGlobalSheet)
+			wait(1)
+			
+			'Click the Generate Button to generate a unique ID or PIID. NOTE Some Actions don't require this
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Generate").Click
+			wait(3)
+			
+			'Select either A - Contract Administration Office or 
+			'P - Procuring Contracting Office from Drop Down
+			datatable.SetCurrentRow(AgencyTypeCode) 'NOTE using this variable to pass in one of the two values. 
+			Browser("AAMS").Page("AAMS").Frame("Frame_9").WebList("Office Issuing Mod Drop Down").Select datatable("AgencyTypeCode", dtGlobalSheet)
+			wait(2)
+		
+			'Click OK
+			Browser("AAMS").Page("AAMS").Frame("Frame_2").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Milestones Plus Button
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebElement("MilestonePlan").Click
+			wait(3)
+			
+			'Click Ok at the bottom of the Select Public Plan Window
+			Browser("AAMS").Page("AAMS").Frame("Frame_3").WebButton("Ok").Click
+			wait(1)
+			
+			'Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Create Action").Click
+			wait(5)
+			
+'							'MAKE THE PIDD / ActionID Available as a variable. 
+'							Set TempActionID  = Browser("AAMS").Page("AAMS").Frame("Frame_10").WebEdit("GENERATED ACTION ID")
+'							ActionID = TempActionID.GetROProperty("Value")
+'							Print ActionID
+			
+			'Click Take Me There
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Take Me There").Click
+			wait(1)
+		
+		Case 9  'Create an Order (ORDER)
+			'From a Selected Action Create a create an Order Action
+			'Click BIG Process Coach
+			Browser("AAMS").Page("AAMS").Frame("Frame_8").Image("What do I do next? Click").Click
+			wait(1)
+			
+			'Click Create an Order Link
+			Browser("AAMS").Page("AAMS").Frame("Frame_8").Link("Create an order").Click
+			wait(1)
+			
+			'Select a Radio Button For the Type of Action to Create. 
+			datatable.SetCurrentRow(ActionType)
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebRadioGroup("Delivery Task Order Radio Button").Select DataTable("ActionType", dtGlobalSheet)
+			wait(1)
+
+			'Click the Generate Button to generate a unique ID or PIID. NOTE Some Actions don't require this
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Generate").Click
+			wait(3)
+		
+			'For SOLS, AWARDS, ORDERS
+			'Activity Address Code -- NOTE If AAC exists, then ATC also exists.  
+			'Potential area to change for different KBS.  
+			If Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Activity Address Code").Exist Then 
+				datatable.SetCurrentRow(ActivityAddressCode)
+				Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Activity Address Code").Select DataTable("ActivityAddressCode", dtGlobalSheet)
+				wait(2)
+				'Agency Type Code
+				datatable.SetCurrentRow(AgencyTypeCode)
+				Browser("AAMS").Page("AAMS").Frame("Frame_4").WebList("Agency Type Code").Select DataTable("AgencyTypeCode", dtGlobalSheet)
+				wait (4)
+			End If
+
+			'Click OK
+			Browser("AAMS").Page("AAMS").Frame("Frame_2").WebButton("Ok").Click
+			wait(3)
+			
+			'Click Milestones Plus Button
+			'Browser("AAMS").Page("AAMS").Frame("Frame").WebElement("MilestonePlan").Click
+			'wait(3)
+			
+			'Click Ok at the bottom of the Select Public Plan Window
+			'Browser("AAMS").Page("AAMS").Frame("Frame_3").WebButton("Ok").Click
+			'wait(1)
+			
+			'Click Create Action
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Create Action").Click
+			wait(5)
+			
+			'Click Take Me There
+			Browser("AAMS").Page("AAMS").Frame("Frame").WebButton("Take Me There").Click
+			wait(1)
+		
+	End Select
+	
+	'Set VARIABLES TO NOTHING
+	Set ActionType = Nothing
+	Set PlanType = Nothing
+	Set FundType = Nothing
+	Set ActivityAddressCode = Nothing
+	Set AgencyTypeCode = Nothing
+	
+End Function
+
