@@ -1,0 +1,358 @@
+'Desktop, Drawer & Folder Script:
+'DDF05 - Create Full Lifecycle Package
+'Step 1, Create an ACQ-PLAN and:
+'   • Attach the PO>25K Milestone Plan during creation
+'   • Enter a title
+'   • Enter 3 comments
+'   • Populate all data values
+'   • Upload all mandatory files to the briefcase
+'   • Upload 9 additional briefcase files: 3 .xlsx, 3 docx and 3 .PDF. Note: include 'AP' in the file name for each uploaded file
+'   • Tag each uploaded file with 009
+'   • Create an ACQUISITION-PLAN document and save it as Word & PDF
+'   • Set the Action State to APPROVED
+
+'Login as autocouserddf01
+	datatable.SetCurrentRow(2) 
+	RunAction "Login [CreateActions]", oneIteration
+	Browser("AAMS").Sync
+
+	'Results
+	TestStep = NOW &"DDF05_step01_LOGIN, SNAPSHOT:Login as autocouserddf01: PASS"
+	TestStepImage = "DDF05_step01_LOGIN"&".png"
+	Datatable.SetCurrentRow(1)
+	CaptureStepResults TestStepImage,TestStep
+	wait(1)
+	
+	'Create ACQ-PLAN
+	  ProcessCoachType = ""
+	  ClassType = "Link"
+	  'DescValueOne = "Create a solicitation action"
+	  'DescValueTwo = "A"
+	  ActionType = "462"
+	  vChangeOrClearPlan = "Add"
+	  vPublicPrivate = "Public"
+	  vPlanName = "PO > \$25K"
+	  vMoveSourceAction = ""
+	  vDateRestriction = ""
+	  vDTPTC = "1" 'Plan Type
+	  'vDTATC = "1"
+	  'vDTAAC = "5"
+	  datatable.SetCurrentRow(1)
+	  RunAction "mainAeonCreateAction [AeonNavigation]", oneIteration
+	  Browser("AAMS").Sync
+	  wait(1)   
+	
+  ...............
+  
+  'Enter Title
+	titleComment = "12"
+	datatable.SetCurrentRow(1)
+	RunAction "ModifyTitle [CreateActions]", oneIteration
+	Browser("AAMS").Sync
+	
+	'Enter 3 Comments
+	MainAddComments = Array("Comment One DDF01 ACQ-PLAN", "Comment TWO DDF01 ACQ-PLAN", "Comment THREE DDF01 ACQ-PLAN")
+	datatable.SetCurrentRow(1)
+	RunAction "mainOverviewAction [CreateActions]", oneIteration
+	Browser("AAMS").Sync
+  
+   'Populate all Data Values
+	'Click DATA VALUES TAB
+	datatable.SetCurrentRow(125)
+	descValueTwo = datatable.Value("AeonProperty01", dtGlobalSheet)
+	descValueOne = datatable.Value("AeonProperty02", dtGlobalSheet)
+	ClickType = "Single"
+	ClassType = "Link"
+	AeonDPGeneric01 = "html tag"
+	AeonDPGeneric02 = "innertext"
+	NumberOFOpenActions = "1"
+	datatable.SetCurrentRow(99)
+	RunAction "mainAeonDPNav [AeonNavigation]", oneIteration
+	Browser("AAMS").Sync	
+	wait(3)
+  
+  'Populate Datavalues on the ACQ-PLAN
+	'NOTE: If you change the values, or remove the values, or add the vakues, make sure to update the TotalActualDataCount loop variable to total number of values minus 1.
+'Set the WEBLIST Data Values fields
+	'First Set the Array Count to 0 outside of the For Loop, then increment it by 1 inside the loop
+	TotalDataTableArrayValue = 0
+	TotalActualDataCount = 0	
+	AeonDataValue = array("881")
+	AeonDVProperty = array("99 (Automation)")
+	Do	
+		For Each DTValue in AeonDataValue   
+			For Each AeonFieldValue in AeonDVProperty
+			'For Each AeonFieldValue in AeonDVProperty
+			'This loops through the array assigning the Data Table Index Value to AeonProperty03
+			'That becomes the datatable row to get the object to populate the data.  'DescValueThree is the AeonDVProperty array. (The actual data populated in the field)
+				AeonProperty03 = AeonDataValue(TotalDataTableArrayValue)  
+				DescValueThree = AeonDVProperty(TotalActualDataCount)
+				print DescValueThree
+				print AeonProperty03
+				datatable.SetCurrentRow(AeonProperty03)
+				descValueTwo = datatable.Value("AeonProperty01", dtGlobalSheet)
+				descValueOne = datatable.Value("AeonProperty02", dtGlobalSheet)
+				ClickType = "Single"
+				ClassType = "WebList"
+				AeonDPGeneric01 = "html tag"
+				AeonDPGeneric02 = "acc_name"
+				NumberOFOpenActions = "0" 
+				datatable.SetCurrentRow(2)
+				RunAction "mainAeonDPDataValues [AeonNavigation]", oneIteration
+				Browser("AAMS").Sync	
+				wait(1)		
+				TotalActualDataCount = TotalActualDataCount + 1
+					If TotalActualDataCount > 0 Then 'NOTE: The number 1 is the total number of items in the arrays minus 1.  Exit when that variable becomes 1.
+						Exit Do
+					End If
+				TotalDataTableArrayValue = TotalDataTableArrayValue + 1	
+			Next
+		Next
+	Loop While False
+	wait(3)
+
+'Set WEBEDIT Data Values fields
+	'First Set the Array Count to 0 outside of the For Loop, then increment it by 1 inside the loop
+	TotalDataTableArrayValue = 0
+	TotalActualDataCount = 0	
+	DeliveryDate = dateadd("m", 2, Date)
+	POPBeginDate = Date
+	PopEndDAte = dateadd("m", 3, Date)
+	AeonDataValue = array("877","878","879","1244","882","891","883","1208","885","1209","1210","888","889","890")
+	AeonDVProperty = array("45,800","50,000.00","49,999.99","Automation","Smith","phone number","AD","address","ABC","alt phone","test@testeEmail.com",DeliveryDate,POPBeginDate,POPEndDate)
+	Do	
+		For Each DTValue in AeonDataValue   
+			For Each AeonFieldValue in AeonDVProperty
+	'For Each AeonFieldValue in AeonDVProperty
+	'This loops through the array assigning the Data Table Index Value to AeonProperty03
+	'That becomes the datatable row to get the object to populate the data.  'DescValueThree is the AeonDVProperty array. (The actual data populated in the field)
+		AeonProperty03 = AeonDataValue(TotalDataTableArrayValue)  
+		DescValueThree = AeonDVProperty(TotalActualDataCount)
+		print DescValueThree
+		print AeonProperty03
+		datatable.SetCurrentRow(AeonProperty03)
+		descValueTwo = datatable.Value("AeonProperty01", dtGlobalSheet)
+		descValueOne = datatable.Value("AeonProperty02", dtGlobalSheet)
+		ClickType = "Single"
+		ClassType = "WebEdit"
+		AeonDPGeneric01 = "html tag"
+		AeonDPGeneric02 = "title"
+		NumberOFOpenActions = "0" 
+		datatable.SetCurrentRow(1)
+		RunAction "mainAeonDPDataValues [AeonNavigation]", oneIteration
+		Browser("AAMS").Sync	
+		wait(1)		
+		TotalActualDataCount = TotalActualDataCount + 1
+			If TotalActualDataCount > 13 Then 'NOTE: The number 12 is the total number of items in the arrays minus 1.  Exit when that variable becomes 14
+				Exit Do
+			End If
+		TotalDataTableArrayValue = TotalDataTableArrayValue + 1	
+			Next
+		Next
+	Loop While False
+	wait(1)
+  
+  ....................
+  
+'Get a right Fiscal Year first
+	If (DatePart("M",Date)) = "10" then
+	FISCALYEAR = DateAdd("yyyy",1,date)
+	print FISCALYEAR
+	Elseif (DatePart("M",Date)) = "11" then
+	FISCALYEAR = DateAdd("yyyy",1,date)
+	print FISCALYEAR
+	elseif (DatePart("M",Date)) = "12" then
+	FISCALYEAR = DateAdd("yyyy",1,date)
+	print FISCALYEAR
+	else
+	FISCALYEAR = DateAdd("yyyy",0,date)
+	print FISCALYEAR
+	End  If
+	CurrentFY = right(FISCALYEAR,2) 
+	print CurrentFY
+	
+	'Set Fund Line Details using a loop	
+	TotalFundLineCount = 0	
+	TotalActualFLCount = 0
+	AeonDataValue = array("963","964","968")
+	AeonFLProperty = array("FL01",CurrentFY,"25000")
+	Do	
+		For Each DTValue in AeonDataValue   
+			For Each FLValue in AeonFLProperty
+			'This loops through the array assigning the Data Table Index Value to AeonProperty03
+			'That becomes the datatable row to get the object to populate the data.  'DescValueThree is the AeonDVProperty array. (The actual data populated in the field)
+				AeonProperty03 = AeonDataValue(TotalFundLineCount)  
+				DescValueThree = AeonFLProperty(TotalActualFLCount)
+				print DescValueThree
+				print AeonProperty03
+				datatable.SetCurrentRow(AeonProperty03)
+				descValueTwo = datatable.Value("AeonProperty01", dtGlobalSheet)
+				descValueOne = datatable.Value("AeonProperty02", dtGlobalSheet)
+				ClickType = "Single"
+				ClassType = "WebEdit"
+				AeonDPGeneric01 = "html tag"
+				AeonDPGeneric02 = "html id"
+				NumberOFOpenActions = "0" 
+				datatable.SetCurrentRow(1)
+				RunAction "mainAeonDPDataValues [AeonNavigation]", oneIteration
+				Browser("AAMS").Sync	
+				wait(1)
+
+				TotalActualFLCount = TotalActualFLCount + 1
+					If TotalActualFLCount > 2 Then 'NOTE: The number 0 is the total number of items in the arrays minus 1.  Exit when that variable becomes 1.
+						Exit Do
+					End If
+				TotalFundLineCount = TotalFundLineCount + 1	
+			Next
+		Next
+	Loop While False
+	wait(1)
+	wait(1)
+  
+  ...................
+
+  
+  'Add 9 Additional Files: 3 .xlsx, 3 docx, 3 pdf. NOTE: Rename File to say AP_filename
+	'Add First XLSX Document
+	MainBriefcaseFileName = "2"
+	datatable.SetCurrentRow(4)
+	RunAction "mainBriefcase [CreateActions]", oneIteration
+	Browser("AAMS").Sync
+	wait(1)	
+  
+  'Rename file
+	MainBriefcaseFileName = "7" 'becomes number 9
+	RenamedFile = "ACQ-PLAN DOCUMENT 2" 
+	datatable.SetCurrentRow(3) 
+	RunAction "mainBriefcase [CreateActions]", oneIteration
+	Browser("AAMS").Sync
+  
+  'Mouse over the 009 tag for one of the files.
+	'Verify: Tool tip containing the tag number and description displayed
+	TestStep = "TC 03 Step 05"
+	AeonGeneric = "Tag 009"
+	datatable.SetCurrentRow(1)
+	BCMSWriteOutputFileResults TestStep,AeonGeneric  
+	wait(1)
+  ....................
+  
+  'Number of Segnments increased by number of new clauses inserted
+	'Print the Number of Segments in the  Output log
+	Set Value = Browser("AAMS").Page("AEON").Frame("Frame_13").WebElement("NumberOfSegments")
+	NumberOfSegments = Value.GetROProperty("innertext")
+	print NumberOfSegments
+	wait(3)
+  
+  'Use a For Loop with an Array to delete all 3 files from the Content Manager
+	'Set counter
+	TotalFileCount = 0
+	FilesToDelete = array("Automation DOC File","AAMS Spreadsheet","automationPDFGeneric")
+	Do
+		For Each  File in FilesToDelete
+		descValueTwo = FilesToDelete(TotalFileCount)
+		'Select the File needs to be Deleted
+		classType = "WebElement"
+		descValueOne = "DIV"
+		print descValueTwo
+		NumberOfOpenActions = "0"
+		ClickType = "Single"	
+		AeonDPGeneric01 = "html tag"
+		AeonDPGeneric02 = "innertext" 
+		datatable.SetCurrentRow(1)
+		RunAction "mainAeonDPNav [AeonNavigation]", oneIteration
+		Browser("AAMS").Sync
+		wait(1)
+
+		'Click DELETE
+		datatable.SetCurrentRow(281)
+		descValueTwo = datatable.Value("AeonProperty01", dtGlobalSheet)
+		descValueOne = datatable.Value("AeonProperty02", dtGlobalSheet)
+		ClickType = "Single"
+		numberOfOpenActions = "0"   
+		ClassType = "WebButton"
+		AeonDPGeneric01 = "html tag"
+		AeonDPGeneric02 = "html id"   
+		datatable.SetCurrentRow(1)
+		RunAction "mainAeonDPNav [AeonNavigation]", oneIteration
+		Browser("AAMS").Sync   
+		wait(1)
+
+		'Results
+		TestStep = NOW & "CM03_Step_09-10a, SNAPSHOT:Aeon confirmation message displays: PASS"
+		TestStepImage = "CM03_Step_09-10a"  & ".png"
+		Datatable.SetCurrentRow(1)
+		CaptureStepResults TestStepImage,TestStep,AeonGeneric
+		wait(1)
+	
+		'Click YES on AEON message
+		datatable.SetCurrentRow(257)
+		descValueTwo = datatable.Value("AeonProperty01", dtGlobalSheet)
+		descValueOne = datatable.Value("AeonProperty02", dtGlobalSheet)
+		ClickType = "Single"
+		numberOfOpenActions = "0"   
+		ClassType = "WebButton"
+		AeonDPGeneric01 = "html tag"
+		AeonDPGeneric02 = "html id"   
+		datatable.SetCurrentRow(1)
+		RunAction "mainAeonDPNav [AeonNavigation]", oneIteration
+		Browser("AAMS").Sync   
+		wait(1)
+		
+		'Results
+		TestStep = NOW & "CM03_Step_09-10a, SNAPSHOT:File Deleted: PASS"
+		TestStepImage = "CM03_Step_09a"  & ".png"
+		Datatable.SetCurrentRow(1)
+		CaptureStepResults TestStepImage,TestStep,AeonGeneric
+		wait(1)
+		'Counter 
+		TotalFileCount = TotalFileCount + 1
+			If TotalFileCount > 2 Then
+				Exit Do
+			End If
+		Next
+	Loop While False	
+  
+  
+  .........................
+  
+  'Step 5, Open Word Document, Navigate to the PRICE/COST SCHEDULE. 
+	'Verify: the Item Information section displays.
+	'Scroll down the document to the PRICE/COST SCHEDULE
+	'Window("Word").WinObject("Microsoft Word Document").highlight
+	Window("Word").Activate
+	Window("Word").WinObject("Vertical").WinScrollBar("Vertical").NextPage 17
+	wait(1)
+	
+	'Open the AP_DDF01_DOCX01 and AP Excel File_1 and add 'Modified by autocouserddf02' in the document and save the changes
+	ClickType = "Single"
+	classType = "Link"
+	descValueOne = "A"
+	descValueTwo = "AP_DDF01_DOCX01"
+	datatable.SetCurrentRow(13) 
+	RunAction "mainAeonDPNav [AeonNavigation]", oneIteration
+	Browser("AAMS").Sync
+	wait(5)
+	
+	'Update the Word File
+	Window("Word").WinObject("Microsoft Word Document").highlight
+	Window("Word").WinObject("Microsoft Word Document").Type "Testing DDFFullEdit01 ACQ PLAN   " 
+	wait(5)
+  
+  'Close the Word File
+	Window("Word").WinObject("Ribbon").WinButton("Close").Click
+	wait(3)
+	Window("Word").Window("Microsoft Word").WinObject("Microsoft Word").WinButton("Save").Click
+  
+  'Logout
+	logout 
+	wait(1)
+	
+	'Maintenance
+	BrowserType = "4"
+	datatable.SetCurrentRow (BrowserType)
+	DDFMaintenance BrowserType  
+	Browser("AAMS").Sync
+	wait(1)
+  
+  
+  
